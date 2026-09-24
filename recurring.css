@@ -1,0 +1,1 @@
+.rota-actions{display:flex;gap:9px;align-items:center}.rota-board-grid{grid-template-columns:repeat(7,minmax(132px,1fr));overflow-x:auto}.modal-helper{font-size:11px;line-height:1.5;color:#718177;margin:14px 0 16px}@media(max-width:560px){.rota-actions{display:grid;gap:8px;width:100%}.rota-actions button{width:100%}}

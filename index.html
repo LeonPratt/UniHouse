@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#213c2e" />
+    <title>Housemate — the calm way to run a shared house</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./features.css" />
+    <link rel="stylesheet" href="./recurring.css" />
+    <link rel="stylesheet" href="./calendar.css" />
+    <link rel="stylesheet" href="./settlements.css" />
+    <script src="./config.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#dashboard" aria-label="Housemate home">
+          <span class="brand-mark"><i></i><i></i><i></i></span>
+          <span>housemate</span>
+        </a>
+        <div class="house-switcher"><span class="house-icon">⌂</span><div><strong>48 Cardigan road</strong><small>University house</small></div><span class="chevron">⌄</span></div>
+        <nav class="navigation" aria-label="Main navigation">
+          <a class="nav-link active" data-page="dashboard" href="#dashboard"><span>⌘</span>Overview</a>
+          <a class="nav-link" data-page="rotas" href="#rotas"><span>↻</span>Rotas <em id="rotaCount">2</em></a>
+          <a class="nav-link" data-page="calendar" href="#calendar"><span>□</span>Calendar</a>
+          <a class="nav-link" data-page="expenses" href="#expenses"><span>£</span>Expenses</a>
+          <a class="nav-link" data-page="people" href="#people"><span>♧</span>People <em id="approvalCount">1</em></a>
+        </nav>
+        <div class="sidebar-bottom">
+          <button class="plain-button" id="settingsButton"><span>⚙</span> House settings</button>
+          <button class="user-card" id="accountButton">
+            <span class="avatar avatar-me">AT</span><span><strong>Alex Taylor</strong><small>House admin</small></span><b>⋮</b>
+          </button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobileMenu" aria-label="Open menu">☰</button>
+          <div class="date-label" id="todayLabel"></div>
+          <div class="topbar-actions"><button class="icon-button" id="notificationButton" aria-label="Notifications">♧<span></span></button><button class="help-button">?</button></div>
+        </header>
+
+        <section class="page active" id="dashboard">
+          <div class="page-heading"><div><p class="eyebrow">GOOD MORNING, ALEX</p><h1>Keep the house humming.</h1><p class="lede">Here’s the useful stuff for this week — no hunting through the group chat required.</p></div><button class="primary-button" data-open-expense>+ Add expense</button></div>
+          <div class="summary-grid">
+            <article class="summary-card balance-card"><div class="card-kicker"><span>Your balance</span><button aria-label="About balances">i</button></div><strong id="balanceTotal">£4.75</strong><p>You’re owed <b>£4.75</b> this month</p><div class="mini-people"><span class="avatar avatar-jm">JM</span><span class="avatar avatar-sk">SK</span><span class="avatar avatar-rc">RC</span><small>from 3 people</small></div></article>
+            <article class="summary-card"><div class="card-kicker"><span>Next up</span><span class="status-pill amber">Friday</span></div><div class="task-summary"><span class="task-icon bin">♻</span><div><strong>Take the bins out</strong><p>You &amp; Jamie</p></div></div><button class="text-button" data-go="rotas">See rota <span>→</span></button></article>
+            <article class="summary-card"><div class="card-kicker"><span>House pot</span><span class="pot-mark">⌁</span></div><strong>£18.40</strong><p>For shared essentials</p><div class="progress"><i style="width:61%"></i></div><small class="progress-label">£11.60 until top-up</small></article>
+          </div>
+
+          <div class="content-grid">
+            <section class="panel rota-panel"><div class="panel-heading"><div><h2>This week’s rota</h2><p>16 – 22 September</p></div><button class="text-button" data-go="rotas">View all <span>→</span></button></div><div class="rota-list" id="dashboardRota"></div></section>
+            <section class="panel activity-panel"><div class="panel-heading"><div><h2>Recent activity</h2><p>What’s happened around the house</p></div></div><div class="activity-list" id="activityList"></div></section>
+          </div>
+          <section class="welcome-strip"><div class="strip-illustration">✦</div><div><strong>One less thing to remember.</strong><p>Housemate keeps chores, costs, and friendly nudges in one easy place.</p></div><button class="close-strip" id="closeStrip" aria-label="Dismiss">×</button></section>
+        </section>
+
+        <section class="page" id="rotas">
+          <div class="page-heading"><div><p class="eyebrow">SHARED RESPONSIBILITIES</p><h1>House rota</h1><p class="lede">Everyone can see what’s theirs, and tick it off when it’s done.</p></div><div class="rota-actions"><button class="secondary-button" id="addRecurringButton">↻ Create recurring rota</button><button class="primary-button" id="addTaskButton">+ Add task</button></div></div>
+          <section class="panel rota-board"><div class="panel-heading"><div><h2 id="rotaWeekLabel">This week</h2><p>Tap a task to mark it complete</p></div><div class="week-actions"><button id="previousWeekButton" aria-label="Previous week">‹</button><button class="today-btn" id="currentWeekButton">This week</button><button id="nextWeekButton" aria-label="Next week">›</button></div></div><div class="rota-board-grid" id="rotaBoard"></div></section>
+          <section class="how-it-works"><span>↻</span><div><strong>Rotas rotate automatically</strong><p>Tasks move to the next person every week, so no one gets stuck with the same job.</p></div></section>
+        </section>
+
+        <section class="page" id="calendar">
+          <div class="page-heading"><div><p class="eyebrow">PLANS FOR THE HOUSE</p><h1>House calendar</h1><p class="lede">Trips, visitors, term dates — everything the house should know about.</p></div><button class="primary-button" id="addEventButton">+ Add event</button></div>
+          <section class="panel calendar-panel"><div class="panel-heading"><div><h2 id="calendarMonthLabel">September 2026</h2><p>Visible to every approved housemate</p></div><div class="week-actions"><button id="previousMonthButton" aria-label="Previous month">‹</button><button class="today-btn" id="currentMonthButton">Today</button><button id="nextMonthButton" aria-label="Next month">›</button></div></div><div class="calendar-weekdays"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div><div class="calendar-grid" id="calendarGrid"></div></section>
+        </section>
+
+        <section class="page" id="expenses">
+          <div class="page-heading"><div><p class="eyebrow">MONEY, WITHOUT THE MATHS</p><h1>Shared expenses</h1><p class="lede">Add what you bought. We’ll make it clear who owes what.</p></div><button class="primary-button" data-open-expense>+ Add expense</button></div>
+          <div class="expense-summary"><article><span>You paid</span><strong id="youPaid">£18.90</strong><small>This month</small></article><article><span>You’re owed</span><strong id="youOwed">£4.75</strong><small>Across 3 people</small></article><article><span>You owe</span><strong id="youOwe">£0.00</strong><small>You’re all square</small></article></div>
+          <section class="panel expense-panel"><div class="panel-heading"><div><h2>September expenses</h2><p id="expenseSubtitle">3 expenses so far</p></div><button class="filter-button">All expenses <span>⌄</span></button></div><div class="expense-table" id="expenseList"></div></section>
+          <section class="settle-card"><div class="settle-icon">£</div><div><h3>Settle up whenever you like</h3><p>Mark payments as settled once the money’s changed hands. No payment links, no pressure.</p></div><button class="secondary-button" id="settleButton">View balances</button></section>
+        </section>
+
+        <section class="page" id="people">
+          <div class="page-heading"><div><p class="eyebrow">THE HOUSE</p><h1>Your people</h1><p class="lede">The people who share chores, bills, and the good kitchen mugs.</p></div><button class="secondary-button" id="inviteInfo">How joining works</button></div>
+          <section class="panel people-panel"><div class="panel-heading"><div><h2>Housemates</h2><p>4 approved members</p></div></div><div class="people-list" id="peopleList"></div></section>
+          <section class="panel pending-panel"><div class="panel-heading"><div><h2>Approval requests <span class="request-count" id="pendingCount">1</span></h2><p>Only approved people can access your house.</p></div></div><div id="pendingList"></div></section>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="modal" id="expenseModal"><form method="dialog" id="expenseForm"><div class="modal-heading"><div><p class="eyebrow">NEW SHARED EXPENSE</p><h2>What did you buy?</h2></div><button class="modal-close" type="button" aria-label="Close">×</button></div><label>Expense name<input required name="name" placeholder="e.g. Washing up liquid" /></label><div class="field-row"><label>Amount (£)<input required name="amount" type="number" min="0.01" step="0.01" placeholder="0.00" /></label><label>Date<input required name="date" type="date" /></label></div><label>Paid by<select name="paidBy"><option>Alex Taylor (you)</option><option>Jamie Morgan</option><option>Sam Khan</option><option>Riley Chen</option></select></label><fieldset><legend>Split equally between</legend><div class="split-members"><label><input type="checkbox" name="split" value="Alex Taylor" checked /> Alex</label><label><input type="checkbox" name="split" value="Jamie Morgan" checked /> Jamie</label><label><input type="checkbox" name="split" value="Sam Khan" checked /> Sam</label><label><input type="checkbox" name="split" value="Riley Chen" checked /> Riley</label></div></fieldset><button class="primary-button full-width" type="submit">Add expense</button></form></dialog>
+    <dialog class="modal small-modal" id="taskModal"><form method="dialog" id="taskForm"><div class="modal-heading"><div><p class="eyebrow">ADD TO THE ROTA</p><h2>New task</h2></div><button class="modal-close" type="button" aria-label="Close">×</button></div><label>Task name<input required name="taskName" placeholder="e.g. Wipe kitchen surfaces" /></label><label>Assigned to<select name="assigned"><option>Alex Taylor</option><option>Jamie Morgan</option><option>Sam Khan</option><option>Riley Chen</option></select></label><button class="primary-button full-width" type="submit">Add task</button></form></dialog>
+    <dialog class="modal" id="recurringModal"><form method="dialog" id="recurringForm"><div class="modal-heading"><div><p class="eyebrow">REPEATING HOUSE JOB</p><h2>Create recurring rota</h2></div><button class="modal-close" type="button" aria-label="Close">×</button></div><label>Rota name<input required name="title" placeholder="e.g. Empty the bins" /></label><div class="field-row"><label>Repeat every<input required name="intervalDays" type="number" min="1" max="365" value="2" /></label><label>Starting on<input required name="startDate" type="date" /></label></div><label>Start with<select name="startsWith" id="recurringStartWith"></select></label><fieldset><legend>Rotate between</legend><div class="split-members" id="recurringMembers"></div></fieldset><p class="modal-helper">The order follows this list, starting with the person chosen above. Completing each job automatically creates the next turn.</p><button class="primary-button full-width" type="submit">Create recurring rota</button></form></dialog>
+    <dialog class="modal" id="eventModal"><form method="dialog" id="eventForm"><div class="modal-heading"><div><p class="eyebrow">HOUSE CALENDAR</p><h2>Add an event</h2></div><button class="modal-close" type="button" aria-label="Close">×</button></div><label>What’s happening?<input required name="title" placeholder="e.g. Cornwall weekend" /></label><div class="field-row"><label>Starts<input required name="startsOn" type="date" /></label><label>Ends<input required name="endsOn" type="date" /></label></div><label>Where? <input name="location" placeholder="Optional" /></label><label>Notes <input name="notes" placeholder="Optional details for the house" /></label><button class="primary-button full-width" type="submit">Add to calendar</button></form></dialog>
+    <dialog class="modal" id="settlementModal"><form method="dialog"><div class="modal-heading"><div><p class="eyebrow">SETTLE UP</p><h2>Who should pay whom?</h2></div><button class="modal-close" type="button" aria-label="Close">×</button></div><p class="settlement-intro">These transfers settle every recorded shared expense with the fewest practical payments.</p><div class="settlement-list" id="settlementList"></div><div class="balance-breakdown" id="balanceBreakdown"></div><button class="secondary-button full-width" type="button" id="closeSettlementButton">Done</button></form></dialog>
+    <dialog class="modal small-modal" id="accountModal"><form method="dialog"><div class="modal-heading"><div><p class="eyebrow">YOUR ACCOUNT</p><h2>Alex Taylor</h2></div><button class="modal-close" type="button" aria-label="Close">×</button></div><p class="account-copy">You’re signed in as the house admin. New sign-ups stay pending until you approve them from People.</p><button class="secondary-button full-width" id="signOutButton" value="cancel">Sign out</button></form></dialog>
+    <div class="toast" id="toast" role="status"></div>
+    <script type="module" src="./auth-guard.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
