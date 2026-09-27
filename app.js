@@ -268,5 +268,26 @@ function start() {
   renderAll(); if (location.hash && byId(location.hash.slice(1))) navigate(location.hash.slice(1));
 }
 
-window.addEventListener('housemate-auth-ready', async event => { live = true; supabase = event.detail.supabase; me = { id: event.detail.session.user.id, name: event.detail.profile.display_name, role: event.detail.profile.role === 'admin' ? 'House admin' : 'Housemate', initials: initials(event.detail.profile.display_name), tone: 'me' }; try { await loadLiveData(); } catch (error) { toast(`Couldn’t load your house data: ${error.message}`); } });
+async function connectAuthenticatedUser(auth) {
+  if (!auth?.session?.user || !auth.supabase || !auth.profile) return;
+  live = true;
+  supabase = auth.supabase;
+  me = {
+    id: auth.session.user.id,
+    name: auth.profile.display_name,
+    role: auth.profile.role === 'admin' ? 'House admin' : 'Housemate',
+    initials: initials(auth.profile.display_name),
+    tone: 'me'
+  };
+  renderAll();
+  try {
+    await loadLiveData();
+  } catch (error) {
+    toast(`Couldn’t load your house data: ${error.message}`);
+  }
+}
+
+window.addEventListener('housemate-auth-ready', event => { void connectAuthenticatedUser(event.detail); });
+window.addEventListener('pageshow', () => { void connectAuthenticatedUser(window.housemateAuth); });
 start();
+void connectAuthenticatedUser(window.housemateAuth);
