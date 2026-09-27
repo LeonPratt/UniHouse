@@ -1,6 +1,6 @@
 const config = window.HOUSEMATE_CONFIG || {};
 if (config.supabaseUrl && config.supabaseAnonKey) {
-  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.57.0');
   const supabase = createClient(config.supabaseUrl, config.supabaseAnonKey);
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) window.location.replace('./auth.html');

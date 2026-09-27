@@ -1,7 +1,9 @@
 const config = window.HOUSEMATE_CONFIG || {}, setup = document.querySelector('#authSetup'), app = document.querySelector('#authApp'), status = document.querySelector('#authStatus'), login = document.querySelector('#authForm'), signup = document.querySelector('#signupForm'), pending = document.querySelector('#pendingView');
+const houseName = config.houseName?.trim() || 'Your house';
+document.querySelectorAll('[data-house-name]').forEach(element => element.textContent = houseName);
 if (config.supabaseUrl && config.supabaseAnonKey) {
   setup.hidden = true; app.hidden = false;
-  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2'), supabase = createClient(config.supabaseUrl, config.supabaseAnonKey);
+  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.57.0'), supabase = createClient(config.supabaseUrl, config.supabaseAnonKey);
   const show = target => { login.hidden = target !== 'login'; signup.hidden = target !== 'signup'; pending.hidden = target !== 'pending'; }, message = text => status.textContent = text;
   if (new URLSearchParams(location.search).has('pending')) show('pending');
   document.querySelector('#showSignUp').onclick = () => show('signup'); document.querySelector('#showLogin').onclick = () => show('login'); document.querySelector('#logOut').onclick = async () => { await supabase.auth.signOut(); show('login'); history.replaceState({}, '', './auth.html'); };

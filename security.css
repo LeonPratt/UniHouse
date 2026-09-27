@@ -1,0 +1,2 @@
+.progress i { width: 61%; }
+.rota-task:not([data-complete]) { cursor: default; }

@@ -15,8 +15,9 @@ create table public.profiles (
 
 create table public.chores (
   id uuid primary key default uuid_generate_v4(),
-  title text not null,
+  title text not null check (char_length(title) between 2 and 120),
   assigned_to uuid not null references public.profiles(id),
+  created_by uuid references public.profiles(id),
   due_date date not null,
   completed_at timestamptz,
   created_at timestamptz not null default now()
@@ -24,7 +25,7 @@ create table public.chores (
 
 create table public.expenses (
   id uuid primary key default uuid_generate_v4(),
-  title text not null,
+  title text not null check (char_length(title) between 2 and 160),
   amount numeric(10,2) not null check (amount > 0),
   paid_by uuid not null references public.profiles(id),
   spent_on date not null default current_date,
@@ -42,7 +43,7 @@ create table public.expense_shares (
 -- New email sign-ups become pending automatically. Promote the first owner manually:
 -- update public.profiles set status='approved', role='admin' where id='<your-user-id>';
 create or replace function public.handle_new_user()
-returns trigger language plpgsql security definer set search_path = public as $$
+returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   insert into public.profiles (id, display_name)
   values (new.id, coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email, '@', 1)));
@@ -56,11 +57,11 @@ alter table public.expenses enable row level security;
 alter table public.expense_shares enable row level security;
 
 create or replace function public.is_approved()
-returns boolean language sql stable security definer set search_path = public as $$
+returns boolean language sql stable security definer set search_path = '' as $$
  select exists (select 1 from public.profiles where id = auth.uid() and status = 'approved');
 $$;
 create or replace function public.is_admin()
-returns boolean language sql stable security definer set search_path = public as $$
+returns boolean language sql stable security definer set search_path = '' as $$
  select exists (select 1 from public.profiles where id = auth.uid() and role = 'admin' and status = 'approved');
 $$;
 
