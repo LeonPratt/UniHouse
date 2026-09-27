@@ -1,4 +1,4 @@
--- Read-only privilege checks. Run in the SQL Editor after migration 004.
+-- Read-only privilege checks. Run in the SQL Editor after migrations 004 and 005.
 do $$
 begin
   if has_function_privilege('anon', 'public.seed_recurring_rota(uuid,integer)', 'EXECUTE')
@@ -64,5 +64,30 @@ begin
   if not (select relrowsecurity from pg_class where oid = 'public.push_subscriptions'::regclass)
      or not (select relrowsecurity from pg_class where oid = 'private.rota_push_deliveries'::regclass)
   then raise exception 'Push notification RLS is disabled'; end if;
+
+  if not has_function_privilege('authenticated', 'public.create_pub_golf_game(text,integer,text[])', 'EXECUTE')
+     or not has_function_privilege('authenticated', 'public.set_pub_golf_score(uuid,uuid,integer,integer,integer)', 'EXECUTE')
+     or has_function_privilege('anon', 'public.create_pub_golf_game(text,integer,text[])', 'EXECUTE')
+     or has_function_privilege('anon', 'public.set_pub_golf_score(uuid,uuid,integer,integer,integer)', 'EXECUTE')
+  then raise exception 'Pub Golf RPC privileges are incorrect'; end if;
+
+  if has_table_privilege('anon', 'public.pub_golf_games', 'SELECT')
+     or has_table_privilege('anon', 'public.pub_golf_teams', 'SELECT')
+     or has_table_privilege('anon', 'public.pub_golf_scores', 'SELECT')
+     or has_table_privilege('authenticated', 'public.pub_golf_games', 'INSERT')
+     or has_table_privilege('authenticated', 'public.pub_golf_games', 'UPDATE')
+     or has_table_privilege('authenticated', 'public.pub_golf_teams', 'INSERT')
+     or has_table_privilege('authenticated', 'public.pub_golf_teams', 'UPDATE')
+     or has_table_privilege('authenticated', 'public.pub_golf_teams', 'DELETE')
+     or has_table_privilege('authenticated', 'public.pub_golf_scores', 'INSERT')
+     or has_table_privilege('authenticated', 'public.pub_golf_scores', 'UPDATE')
+     or has_table_privilege('authenticated', 'public.pub_golf_scores', 'DELETE')
+     or not has_table_privilege('authenticated', 'public.pub_golf_games', 'DELETE')
+  then raise exception 'Pub Golf table privileges are incorrect'; end if;
+
+  if not (select relrowsecurity from pg_class where oid = 'public.pub_golf_games'::regclass)
+     or not (select relrowsecurity from pg_class where oid = 'public.pub_golf_teams'::regclass)
+     or not (select relrowsecurity from pg_class where oid = 'public.pub_golf_scores'::regclass)
+  then raise exception 'Pub Golf RLS is disabled'; end if;
 end;
 $$;

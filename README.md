@@ -6,6 +6,7 @@ A small single-household app for chore rotas and shared spending. Before Supabas
 
 - Supabase-backed weekly rota with completion states and task creation
 - Supabase-backed expense entry, equal split selection, and live balances
+- Shared Pub Golf games with team scorecards, penalties, and a live leaderboard
 - Household members and an admin-only, live approval queue
 - Responsive desktop and mobile layout
 - A Supabase schema with pending-by-default email accounts and Row Level Security
@@ -27,6 +28,8 @@ Finally, run [`supabase/migrations/003_security_hardening.sql`](./supabase/migra
 
 For rota push reminders, run [`supabase/migrations/004_rota_push_notifications.sql`](./supabase/migrations/004_rota_push_notifications.sql) after migration 003. It can be run again safely. Push requires the further setup below.
 
+Run [`supabase/migrations/005_pub_golf.sql`](./supabase/migrations/005_pub_golf.sql) to add shared Pub Golf games and scores. Run it after migration 003; migration 004 is optional if you do not use push reminders. Refresh the site after the migration. The migration can be run again safely.
+
 ### Upgrade an existing database
 
 If the app reports that `chores.created_by` does not exist, the database is missing migration 003. In the Supabase Dashboard, open **SQL Editor**, paste the complete contents of [`supabase/migrations/003_security_hardening.sql`](./supabase/migrations/003_security_hardening.sql), and select **Run**. Then refresh the app and sign in again. The migration adds and backfills `created_by` without deleting chores.
@@ -37,7 +40,7 @@ If Supabase still reports that the column is missing after the migration succeed
 NOTIFY pgrst, 'reload schema';
 ```
 
-You can run [`supabase/tests/security_contract.sql`](./supabase/tests/security_contract.sql) in the SQL Editor afterwards to check that the public and authenticated database roles have the intended privileges. The check does not change data. Run migration 004 first.
+You can run [`supabase/tests/security_contract.sql`](./supabase/tests/security_contract.sql) in the SQL Editor afterwards to check that the public and authenticated database roles have the intended privileges. The check does not change data. Run migrations 004 and 005 first.
 
 Approved members can read and add shared content. A creator or admin can edit or delete a standalone chore or calendar event; the rota creator or admin can remove a recurring rota. Only the assigned person or an admin can complete a chore. Expense shares are computed by the database in a single transaction. Admins can approve or reject pending accounts. Existing standalone chores are assigned to their current assignee as creator during the migration.
 
@@ -72,3 +75,4 @@ For a simple check without waiting for 09:00, call the function outside that hou
 - **Approval:** an admin can approve or reject pending sign-ups from the People page.
 - **Recurring rota:** choose **Create recurring rota**, set its interval, select the starting person and participating housemates. Completing it assigns the next turn automatically.
 - **Calendar:** use the Calendar tab to add multi-day trips, visitors, deadlines, or any other shared plan. Every approved housemate sees the same calendar.
+- **Pub Golf:** choose **New game**, enter a game name, 1–36 holes, and 2–20 different team names (one per line). Select a team and enter strokes and optional penalty strokes for each hole; choose **Save** on that hole. An empty strokes field means the hole is unscored. The leaderboard totals strokes plus penalties and shows provisional standings until every team has scored every hole. During play, teams with more completed holes rank first, then fewer total strokes; final standings rank by fewest strokes, with shared ties. Any approved housemate can score. Only the game creator or a house admin can delete a game.
