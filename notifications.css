@@ -1,0 +1,4 @@
+.push-settings{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:15px 0;margin:16px 0}
+.push-settings strong{font-size:13px}
+.push-settings p{font-size:12px;line-height:1.5;color:var(--muted);margin:6px 0 9px}
+.push-settings button[hidden]{display:none}

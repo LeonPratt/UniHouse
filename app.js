@@ -210,13 +210,13 @@ byId('addEventButton').addEventListener('click', () => { byId('eventForm').reset
 document.querySelectorAll('.modal-close').forEach(button => button.addEventListener('click', () => button.closest('dialog').close()));
 byId('accountButton').addEventListener('click', () => byId('accountModal').showModal());
 byId('settingsButton').addEventListener('click', () => toast('House settings are coming next.'));
-byId('notificationButton').addEventListener('click', () => navigate('people'));
+byId('notificationButton').addEventListener('click', () => byId('accountModal').showModal());
 byId('mobileMenu').addEventListener('click', () => document.querySelector('.sidebar').classList.toggle('open'));
 byId('closeStrip').addEventListener('click', event => event.currentTarget.parentElement.remove());
 byId('inviteInfo').addEventListener('click', () => toast('New accounts stay pending until an admin approves them.'));
 byId('settleButton').addEventListener('click', () => { renderSettlement(); byId('settlementModal').showModal(); });
 byId('closeSettlementButton').addEventListener('click', () => byId('settlementModal').close());
-byId('signOutButton').addEventListener('click', async () => { if (live) await supabase.auth.signOut(); window.location.assign('./auth.html'); });
+byId('signOutButton').addEventListener('click', async () => { if (live) { const disabled = await window.disableRotaPush?.(); if (disabled === false) return toast('Could not remove this device’s reminders. Try again before signing out.'); await supabase.auth.signOut(); } window.location.assign('./auth.html'); });
 byId('previousWeekButton').addEventListener('click', () => { rotaWeekOffset -= 1; renderRotaBoard(); });
 byId('nextWeekButton').addEventListener('click', () => { rotaWeekOffset += 1; renderRotaBoard(); });
 byId('currentWeekButton').addEventListener('click', () => { rotaWeekOffset = 0; renderRotaBoard(); });

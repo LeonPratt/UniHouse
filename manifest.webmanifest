@@ -1,0 +1,10 @@
+{
+  "name": "Housemate",
+  "short_name": "Housemate",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f9f7f2",
+  "theme_color": "#263d37",
+  "icons": [{ "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

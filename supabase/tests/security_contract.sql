@@ -1,4 +1,4 @@
--- Read-only privilege checks. Run in the SQL Editor after migration 003.
+-- Read-only privilege checks. Run in the SQL Editor after migration 004.
 do $$
 begin
   if has_function_privilege('anon', 'public.seed_recurring_rota(uuid,integer)', 'EXECUTE')
@@ -44,5 +44,25 @@ begin
      or has_table_privilege('authenticated', 'public.expenses', 'INSERT')
      or has_table_privilege('authenticated', 'public.recurring_rotas', 'INSERT')
   then raise exception 'Direct table writes are broader than intended'; end if;
+
+  if has_table_privilege('anon', 'public.push_subscriptions', 'SELECT')
+     or has_table_privilege('anon', 'public.push_subscriptions', 'INSERT')
+     or has_table_privilege('anon', 'public.push_subscriptions', 'DELETE')
+     or has_table_privilege('authenticated', 'public.push_subscriptions', 'UPDATE')
+     or has_table_privilege('authenticated', 'private.rota_push_deliveries', 'SELECT')
+     or has_table_privilege('authenticated', 'private.rota_push_deliveries', 'INSERT')
+     or has_schema_privilege('authenticated', 'private', 'USAGE')
+     or has_function_privilege('authenticated', 'public.claim_rota_push_delivery(uuid,uuid,date)', 'EXECUTE')
+     or has_function_privilege('anon', 'public.claim_rota_push_delivery(uuid,uuid,date)', 'EXECUTE')
+  then raise exception 'Push subscription or delivery privileges are too broad'; end if;
+
+  if not has_table_privilege('authenticated', 'public.push_subscriptions', 'INSERT')
+     or not has_table_privilege('authenticated', 'public.push_subscriptions', 'DELETE')
+     or not has_function_privilege('service_role', 'public.claim_rota_push_delivery(uuid,uuid,date)', 'EXECUTE')
+  then raise exception 'Push notification privileges are missing'; end if;
+
+  if not (select relrowsecurity from pg_class where oid = 'public.push_subscriptions'::regclass)
+     or not (select relrowsecurity from pg_class where oid = 'private.rota_push_deliveries'::regclass)
+  then raise exception 'Push notification RLS is disabled'; end if;
 end;
 $$;

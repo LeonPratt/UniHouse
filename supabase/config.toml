@@ -1,0 +1,2 @@
+[functions.send-rota-reminders]
+verify_jwt = false

@@ -3,5 +3,7 @@
 window.HOUSEMATE_CONFIG = {
   houseName: 'Your house',
   supabaseUrl: '',
-  supabaseAnonKey: ''
+  supabaseAnonKey: '',
+  // Public VAPID key only. Keep the private key in Supabase Function secrets.
+  vapidPublicKey: ''
 };
