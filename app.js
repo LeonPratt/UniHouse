@@ -132,11 +132,12 @@ function populateForms() {
     document.querySelector('#accountModal h2').textContent = 'Your account';
     return;
   }
+  const members = [me, ...people.filter(person => person.id !== me.id)];
   expenseSelect.innerHTML = `<option>${escapeHtml(me.name)} (you)</option>`;
-  taskSelect.innerHTML = people.map(person => `<option value="${escapeHtml(person.id)}">${escapeHtml(person.name)}${person.id === me.id ? ' (you)' : ''}</option>`).join('');
-  document.querySelector('.split-members').innerHTML = people.map(person => `<label><input type="checkbox" name="split" value="${escapeHtml(person.id)}" checked /> ${escapeHtml(person.name)}${person.id === me.id ? ' (you)' : ''}</label>`).join('');
-  byId('recurringStartWith').innerHTML = people.map(person => `<option value="${escapeHtml(person.id)}">${escapeHtml(person.name)}${person.id === me.id ? ' (you)' : ''}</option>`).join('');
-  byId('recurringMembers').innerHTML = people.map(person => `<label><input type="checkbox" name="recurringMember" value="${escapeHtml(person.id)}" checked /> ${escapeHtml(person.name)}${person.id === me.id ? ' (you)' : ''}</label>`).join('');
+  taskSelect.innerHTML = members.map(person => `<option value="${escapeHtml(person.id)}"${person.id === me.id ? ' selected' : ''}>${escapeHtml(person.name)}${person.id === me.id ? ' (you)' : ''}</option>`).join('');
+  document.querySelector('.split-members').innerHTML = members.map(person => `<label><input type="checkbox" name="split" value="${escapeHtml(person.id)}" checked /> ${escapeHtml(person.name)}${person.id === me.id ? ' (you)' : ''}</label>`).join('');
+  byId('recurringStartWith').innerHTML = members.map(person => `<option value="${escapeHtml(person.id)}"${person.id === me.id ? ' selected' : ''}>${escapeHtml(person.name)}${person.id === me.id ? ' (you)' : ''}</option>`).join('');
+  byId('recurringMembers').innerHTML = members.map(person => `<label><input type="checkbox" name="recurringMember" value="${escapeHtml(person.id)}" checked /> ${escapeHtml(person.name)}${person.id === me.id ? ' (you)' : ''}</label>`).join('');
   document.querySelector('.page-heading .eyebrow').textContent = `GOOD MORNING, ${me.name.split(' ')[0].toUpperCase()}`;
   document.querySelector('#accountModal h2').textContent = me.name;
 }
@@ -157,6 +158,7 @@ async function loadLiveData() {
   if (error) throw error;
   people = profileResult.data.map((profile, index) => ({ id: profile.id, name: profile.display_name, initials: initials(profile.display_name), tone: ['me', 'jm', 'sk', 'rc'][index % 4], role: profile.role === 'admin' ? 'House admin' : 'Housemate', balance: '' }));
   me = people.find(person => person.id === window.housemateAuth.session.user.id) || { id: window.housemateAuth.session.user.id, name: window.housemateAuth.profile.display_name, role: window.housemateAuth.profile.role === 'admin' ? 'House admin' : 'Housemate', initials: initials(window.housemateAuth.profile.display_name), tone: 'me' };
+  if (!people.some(person => person.id === me.id)) people.unshift(me);
   const memberById = Object.fromEntries(people.map(person => [person.id, person]));
   rotas = choreResult.data.map(chore => { const owner = memberById[chore.assigned_to] || { name: 'Former housemate', initials: '??', tone: 'rc' }; return { id: chore.id, task: chore.title, person: owner.name, initials: owner.initials, tone: owner.tone, assignedTo: chore.assigned_to, createdBy: chore.created_by, day: dayFor(chore.due_date), due: prettyDate(chore.due_date), done: Boolean(chore.completed_at), dueDate: chore.due_date, recurringRotaId: chore.recurring_rota_id }; });
   const sharesByExpense = shareResult.data.reduce((all, share) => ({ ...all, [share.expense_id]: [...(all[share.expense_id] || []), share] }), {});
